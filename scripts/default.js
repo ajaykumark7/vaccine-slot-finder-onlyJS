@@ -129,7 +129,8 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
             
             if(response["centers"].length>0) {
                 //No need to write custom logic to prevent multiple calls of this function(which will happen once per each week's data fetched), since API endpoint is configured to return status 400 for multiple calls in less than 3 minutes
-                notifyViaOTP(phone);
+                if(phone!=0)
+                    notifyViaOTP(phone);
                 let output="<h3>Week "+(week+1)+"</h3>";
                 for(let centerIndex=0;centerIndex<response["centers"].length;centerIndex++) {
                     for(let sessionIndex=0;sessionIndex<response["centers"][centerIndex]["sessions"].length;sessionIndex++) {
