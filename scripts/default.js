@@ -82,6 +82,9 @@ function getFormattedDateHelper(inputDay) {
 
 // 4. fetch availability details and send OTP if vaccine stock available
 function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
+    
+    //clear the output window once a new search is triggered
+    document.querySelector('#output-div').innerHTML="";
 
     //check vaccine availability for each week
     for(let week=0;week<numberOfWeeks;week++) {
@@ -90,9 +93,23 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
         fetch(endpoint)
         .then(response => response.json())
         .then(function(response) {
+            
+            //filter the response by age groups
+            function filterByAgeGroup(response) {
+                response["centers"] = response["centers"].filter(center => {
+                    for(let sessionIndex=0;sessionIndex<center["sessions"].length;sessionIndex++) {
+                        if(center["sessions"][sessionIndex].min_age_limit==document.querySelector('#age').value) {
+                            return center;
+                        }
+    
+                    }
+                })
+                return response["centers"];
+            }
+
             //used to optimise performance, ensuring that DOM will be updated only once for each week's data
             function buildOutputHelper(response,centerIndex,sessionIndex,output) {
-                output=output+"<p>"+response["centers"][centerIndex]["name"]+" "+response["centers"][centerIndex]["sessions"][sessionIndex]["date"]+" "+response["centers"][centerIndex]["sessions"][sessionIndex]["available_capacity"]+"</p>";
+                output=output+"<p>"+response["centers"][centerIndex]["name"]+" "+response["centers"][centerIndex]["sessions"][sessionIndex]["date"]+" "+response["centers"][centerIndex]["sessions"][sessionIndex]["available_capacity"]+" "+response["centers"][centerIndex]["sessions"][sessionIndex]["min_age_limit"]+"</p>";
                 return output;
             }
             
@@ -104,7 +121,6 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
                 let OTPRequestBody = {
                     mobile: phone
                 }
-                console.log(JSON.stringify(OTPRequestBody));
                 const endpoint = 'https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP';
                 fetch(endpoint, {
                     method: 'POST', // *GET, POST, PUT, DELETE, etc.
@@ -122,11 +138,13 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
                     if (!response.ok) {
                         alert(response.statusText+": OTP already sent");
                     }
-                    console.log(response);
                 })
     
             }
             
+            //filter response according to required age range
+            response["centers"] = filterByAgeGroup(response);
+
             if(response["centers"].length>0) {
                 //No need to write custom logic to prevent multiple calls of this function(which will happen once per each week's data fetched), since API endpoint is configured to return status 400 for multiple calls in less than 3 minutes
                 if(phone!=0)
@@ -160,7 +178,7 @@ weeks.addEventListener('blur',function() {
     }
 })
 
-//3. When 'check availability' Button is clicked, call API to fetch vaccine availability
+// 3. When 'check availability' Button is clicked, call API to fetch vaccine availability
 const checkAvlBtn=document.querySelector('#check-avl');
 checkAvlBtn.addEventListener('click',function() {
     let districtId = document.querySelector('#district-select').value;
