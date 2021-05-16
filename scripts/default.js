@@ -71,9 +71,9 @@ const districtList= [
     }
 ]
 
-function getFormattedDateHelper(numberOfWeeks) {
+function getFormattedDateHelper(inputDay) {
     let todayTime = new Date();
-    todayTime.setDate(todayTime.getDate() + (numberOfWeeks*7));
+    todayTime.setDate(todayTime.getDate() + inputDay);
     let month = (todayTime.getMonth() + 1);
     let day = (todayTime.getDate());
     let year = (todayTime.getFullYear());
@@ -85,8 +85,7 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
 
     //check vaccine availability for each week
     for(let week=0;week<numberOfWeeks;week++) {
-        let startDate = getFormattedDateHelper(week);
-        console.log(week);
+        let startDate = getFormattedDateHelper(week*7);
         const endpoint = 'https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByDistrict?district_id='+districtId+'&date='+startDate;
         fetch(endpoint)
         .then(response => response.json())
@@ -105,9 +104,18 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
                 let OTPRequestBody = {
                     mobile: phone
                 }
+                console.log(JSON.stringify(OTPRequestBody));
                 const endpoint = 'https://cdn-api.co-vin.in/api/v2/auth/public/generateOTP';
                 fetch(endpoint, {
-                    method: 'POST',
+                    method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                    mode: 'cors', // no-cors, *cors, same-origin
+                    cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                    credentials: 'same-origin', // include, *same-origin, omit
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    redirect: 'follow', // manual, *follow, error
+                    referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
                     body: JSON.stringify(OTPRequestBody)
                   })
                   .then(function(response) {
