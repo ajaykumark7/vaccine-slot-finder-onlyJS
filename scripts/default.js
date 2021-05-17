@@ -93,7 +93,7 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
         fetch(endpoint)
         .then(response => response.json())
         .then(function(response) {
-            
+            console.log(response["centers"].length);
             //filter the response by age groups
             function filterByAgeGroup(response) {
                 response["centers"] = response["centers"].filter(center => {
@@ -152,9 +152,9 @@ function fetchAvailabilityDetailsAndAlertUser(districtId,numberOfWeeks,phone) {
                 let output="<h3>Week "+(week+1)+"</h3>";
                 for(let centerIndex=0;centerIndex<response["centers"].length;centerIndex++) {
                     for(let sessionIndex=0;sessionIndex<response["centers"][centerIndex]["sessions"].length;sessionIndex++) {
-                        // if(response["centers"][centerIndex]["sessions"][sessionIndex]["available_capacity"]>0) {
+                        if(response["centers"][centerIndex]["sessions"][sessionIndex]["available_capacity"]>0) {
                             output=buildOutputHelper(response,centerIndex,sessionIndex,output);
-                        // }
+                        }
                     }
                 }
                 attachToOutputHelper(output);

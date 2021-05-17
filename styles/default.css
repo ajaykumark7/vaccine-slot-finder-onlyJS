@@ -1,9 +1,24 @@
 #root {
     margin-right: auto;
     margin-left: auto;
-    max-width: 960px;
+    max-width: 720px;
 }
 
 label,select,input {
     display:block;
+}
+
+table,
+td,th {
+    border: 1px solid #333;
+}
+
+/* thead,
+tfoot {
+    background-color: #333;
+    color: #fff;
+} */
+
+select,input,button {
+    margin: 2px 0px;
 }
