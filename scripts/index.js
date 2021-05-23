@@ -75,15 +75,6 @@ const districtList = [
   }
 ]
 
-function getFormattedDateHelper(inputDay) {
-  let todayTime = new Date();
-  todayTime.setDate(todayTime.getDate() + inputDay);
-  let month = (todayTime.getMonth() + 1);
-  let day = (todayTime.getDate());
-  let year = (todayTime.getFullYear());
-  return day + '-' + month + '-' + year;
-}
-
 // 1. populate districts select box using districtList data
 let districts = '';
 districtList.forEach(district => {

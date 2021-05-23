@@ -1,3 +1,12 @@
+function getFormattedDateHelper(inputDay) {
+  let todayTime = new Date();
+  todayTime.setDate(todayTime.getDate() + inputDay);
+  let month = (todayTime.getMonth() + 1);
+  let day = (todayTime.getDate());
+  let year = (todayTime.getFullYear());
+  return day + '-' + month + '-' + year;
+}
+
 // 4. fetch availability details and send OTP if vaccine stock available
 export function fetchAvailabilityDetailsAndAlertUser(districtId, numberOfWeeks, phone) {
 
